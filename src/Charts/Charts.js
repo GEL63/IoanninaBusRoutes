@@ -59,7 +59,5 @@ class ApiChart extends Component {
 		)
 	}
 }
-//this.transformData(this.state.data)['x']
-//this.transformData(this.state.data)['y']
 export default ApiChart;
 
