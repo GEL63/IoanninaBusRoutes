@@ -1,51 +1,44 @@
-import React,{ Suspense, useEffect,useState } from 'react';
-import {
-  CDBSidebar,
-  CDBSidebarContent,
-  CDBSidebarFooter,
-  CDBSidebarHeader,
-  CDBSidebarMenu,
-  CDBSidebarMenuItem,
-} from 'cdbreact';
-import { NavLink } from 'react-router-dom';
-
 import 'bootstrap/dist/css/bootstrap.css';
 import Dropdown from 'react-bootstrap/Dropdown';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import './color.css';
-import {choosenBus,getRoute,setWay,setID, busMovement} from '../Presenter/Map.js';
+import {choosenBus,getRoute,setWay,setID} from '../Presenter/Map.js';
 import {show} from '../Charts/Charts';
 
-const origin=[20.852923,39.665555];
-const destination = [20.8412895,39.6201176];
-const newor = [20.8447964,39.6466972];
-const newdest = [20.8486482,39.6441634];
+
 let mycode='0';
 
 //send route to Map.js
-function sendRoute(){
-  setWay(mycode,setID);
+async function sendRoute(){
+  setWay(mycode);
   choosenBus.setChoosenB= '1';
-  /*if(mycode===1){
-    getRoute(origin,destination,mycode);
+ /* if(mycode===1){
+    getRoute(mycode);
   }else{
-    getRoute(newor,newdest,mycode);
-  }*/
+    getRoute(mycode);
+  }
+  */
 }
+
+
 
 const SideMenu = () => {
 
   const [code, setCode] = useState(0);
 
+
+
   useEffect(() => {
     mycode = code;
     sendRoute();
   }, [code]);
+  
+
 
     return (
       <div style={{ display: 'flex', height: '100vh', overflow: 'scroll initial'}}>
-        <CDBSidebar textColor="#fff" backgroundColor="#fbc40e">
-          <CDBSidebarHeader prefix={<i className="fa fa-bars fa-large"></i>}>
+        <CDBSidebar textColor="#f34c19" backgroundColor="#fbc40e" align='left' >
+          <CDBSidebarHeader  prefix={<i className="fa fa-bars fa-large"style={{marginRight: '-100px'}}></i>}>
             <a href="/" className="text-decoration-none" style={{ color: 'inherit' }}>
               Ioannina Bus Routes
             </a>
@@ -59,27 +52,29 @@ const SideMenu = () => {
                     display: 'flex', 
                      width: 70, 
                     padding: '20px'
+                    
+  
                 }}>
 
-                <Dropdown>
+                <Dropdown textColor="black">
                     <Dropdown.Toggle variant="success" id="nav-dropdown">Display Route</Dropdown.Toggle>
                         <Dropdown.Menu  id="box">
-                            <Dropdown.Item onClick={()=>setCode(1)}>01:ΛΟΓΓΑΔΕΣ-ΧΑΡΟΚΟΠΙ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(2)}>02:ΕΛΕΟΥΣΑ-ΠΑΝΕΠΙΣΤΗΜΙΟ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(3)}>03:ΚΟΥΤΣΕΛΙΟ-ΜΟΥΖΑΚΕΟΙ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(4)}>04:ΠΕΡΙΒΛΕΠΤΟΣ-ΚΡΥΑ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(5)}>05:ΜΠΑΦΡΑ-ΝΕΑ ΖΩΗ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(6)}>06:ΠΕΔΙΝΗ-ΠΑΝΕΣΤΗΜΙΟ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(7)}>07:ΑΝΑΤΟΛΗ</Dropdown.Item> 
-                            <Dropdown.Item onClick={()=>setCode(8)}>08:ΑΝΑΤΟΛΗ-ΚΑΤΣΙΚΑ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(9)}>09:ΕΡΓΑΤΙΚΕΣ ΚΑΤΟΙΚΙΕΣ-ΝΕΟΧΩΡΟΠΟΥΛΟ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(10)}>10:ΝΟΣΟΚΟΜΕΙΟ ΧΑΤΖΗΚΩΣΤΑ ΚΑΡΔΑΜΙΤΣΙΑ ΑΝΑΤΟΛΗ ΤΕΙ ΠΑΝΕΠΙΣΤΗΙΜΙΟ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(12)}>12:ΜΑΡΜΑΡΑ-ΣΤΑΥΡΑΚΗ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(13)}>13:ΛΑΨΙΣΤΑ-ΠΑΝΕΠΙΣΤΗΜΙΟ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(15)}>15:ΕΛΛΗΝΙΚΟ-ΧΑΝΙ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(16)}>16:ΠΑΝΕΠΙΣΤΗΜΙΟ-ΑΜΦΙΘΕΑ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(17)}>17:ΝΕΑ ΖΩΗ-ΠΑΝΕΠΙΣΤΗΜΙΟ</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>setCode(21)}>21:ΔΡΟΣΙΑ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1732)}>01:ΛΟΓΓΑΔΕΣ-ΧΑΡΟΚΟΠΙ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1723)}>02:ΕΛΕΟΥΣΑ-ΠΑΝΕΠΙΣΤΗΜΙΟ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1730)}>03:ΚΟΥΤΣΕΛΙΟ-ΜΟΥΖΑΚΕΟΙ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1726)}>04:ΠΕΡΙΒΛΕΠΤΟΣ-ΚΡΥΑ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1729)}>05:ΜΠΑΦΡΑ-ΝΕΑ ΖΩΗ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1728)}>06:ΠΕΔΙΝΗ-ΠΑΝΕΣΤΗΜΙΟ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1722)}>07:ΑΝΑΤΟΛΗ</Dropdown.Item> 
+                            <Dropdown.Item onClick={()=>setCode(1737)}>08:ΑΝΑΤΟΛΗ-ΚΑΤΣΙΚΑ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1734)}>09:ΕΡΓΑΤΙΚΕΣ ΚΑΤΟΙΚΙΕΣ-ΝΕΟΧΩΡΟΠΟΥΛΟ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1727)}>10:ΝΟΣΟΚΟΜΕΙΟ ΧΑΤΖΗΚΩΣΤΑ ΚΑΡΔΑΜΙΤΣΙΑ ΑΝΑΤΟΛΗ ΤΕΙ ΠΑΝΕΠΙΣΤΗΙΜΙΟ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1733)}>12:ΜΑΡΜΑΡΑ-ΣΤΑΥΡΑΚΗ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1735)}>13:ΛΑΨΙΣΤΑ-ΠΑΝΕΠΙΣΤΗΜΙΟ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1731)}>15:ΕΛΛΗΝΙΚΟ-ΧΑΝΙ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1725)}>16:ΠΑΝΕΠΙΣΤΗΜΙΟ-ΑΜΦΙΘΕΑ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1724)}>17:ΝΕΑ ΖΩΗ-ΠΑΝΕΠΙΣΤΗΜΙΟ</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>setCode(1736)}>21:ΔΡΟΣΙΑ</Dropdown.Item>
                             
                             
                             </Dropdown.Menu>
@@ -96,6 +91,7 @@ const SideMenu = () => {
                         display: 'in-line', 
                         width: 70, 
                         padding: 20,
+                        marginTop:-300
                     }}>
 
                     <Dropdown>
@@ -104,7 +100,7 @@ const SideMenu = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu id="box">
-                            <Dropdown.Item href="#/action-2">Bar Chart</Dropdown.Item>
+                            <Dropdown.Item onClick={show}>Bar Chart</Dropdown.Item>
                             <Dropdown.Item href="#/action-2">Line Chart</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
@@ -117,7 +113,7 @@ const SideMenu = () => {
                 padding: '20px 5px',
               }}
             >
-              Sidebar Footer
+             
             </div>
           </CDBSidebarFooter>
         </CDBSidebar>

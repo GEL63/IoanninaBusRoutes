@@ -15,36 +15,45 @@ import linesCsv from '../files/lines.csv';
 import routeCsv from '../files/route.csv';
 import stopsCsv from '../files/stop.csv';
 import Papa from 'papaparse';
-
-//                                      INITIALIZATION OF VARIABLES
-//flag for chosen bus-line
+//____________________________________________________________________________________________________________________INITIALIZATION OF VARIABLES
+//not used yet , maybe if we are gonna use different bus vehicles with different codes
 var sendFlag;
-//call function inside const map
+//call function inside const map for getRoute
 var call;
-//global for id of bus-line
+//for id of bus-line
 var stopID;
 var codeLine;
+//array with all codes of each stop in the selected route
 var newstops;
+//array with all coords of each stop in the selected route
 var routeStops;
+//input string for fetch with all coords of each stop in the selected route
 var wayComma;
 var waypoints;
+//inpute radius for the waypoints
 var radiuses;
+// starting point of the route
 var start;
-
+//steps for the animation/movement of the bus icon
+var steps = 400;
+//counter for the animation
+var counter ;
+var point;
+var route;
 
 const style = {
-  width: '75%',
+  width: '60%',
   height:'600px',
   borderRadius:'10px', 
-  border :'2px solid blue',
-  left:"300px",
-  top:'150px',
+  border :'2px #f34c19',
+  left:"280px",
+  top:'105px',
   position:'absolute'
   
 };
 
 
-//                         FLAG FOR SETTING CHOSEN BUS
+//___________________________________________________________________________________________________________________FLAG FOR SETTING CHOSEN BUS
 export const choosenBus ={
   choosenB : '0',
 
@@ -57,53 +66,56 @@ export const choosenBus ={
 }
 
 }
-//                         UPDATE STOP ID ON CLICK
-export function setID(data){
-  console.log(codeLine+"CODE BUTTON")
-  for(var i=0; i < data.length;i++){
-    if(codeLine == data[i][1] && codeLine!=0){
-       stopID=data[i][0];
-      break;
-    }
-  }
-  console.log(stopID +"STOPID NOW")
-}
 
-export async function setWay(code, callBack){
+export async function setWay(code){
 //parsing lines.csv and use the code from the button clicked (e.g. button 16 clicked , code=16) 
  //loop through lines.csv ,find the row and retrieve the id of the route in this row  
   codeLine=code;
-
-  Papa.parse(linesCsv, {
-    download: true,
-    dynamicTyping: true,
-    //function->const orismata mesa se parenthesiss
-    complete: function (input) {
-         callBack(input.data);
-
-    }
-  });
   getStops(setStops);
-  getStopsArray(setStopsArray);
-  
 
 };
 
-//                           PARSE ROUTE.CSV AND CREATE ARRAY OF BUS STOPS IDS ->ROUTESTOPS
+//_____________________________________________________________________________________________PARSE ROUTE.CSV-->CREATE ARRAY OF STOP CODES
+//_____________________________________________________________________________________________FITLER STOPS.JSON AND GET COORDS FOR EACH STOP
+//____________________________________________________________________________________________________________________________CALLS GETROUTE
+
 function setStops(recordRoute){
   newstops=[];
   var stopIDs;
   for(var i=0; i < recordRoute.length;i++){
-    if(stopID== recordRoute[i][2]){
+    if(codeLine== recordRoute[i][2]){
       newstops=recordRoute[i][6];
       break;
     }
    }
+   console.log(newstops+"setstops")
    
    /*for(var i=0;i<stopIDs.length-1;i=i+4){
     routeStops.push(stopIDs[i] +stopIDs[i+1] +stopIDs[i+2] );
   }*/
-
+  console.log("eimai mesa")
+  routeStops=[];
+  waypoints=[];
+  var way = [];
+  console.log(newstops)
+  routeStops=newstops.split(',');
+  for(var i=0; i < routeStops.length;i++){
+    const result = Object.values(stops).filter(item => item.code === routeStops[i].toString());
+  
+    const lat=Object.entries(result)[0][1].latitude;
+    const lon=Object.entries(result)[0][1].longitude;
+    way.push(lon + "," + lat + ";");
+    console.log("lat"+lat)
+    
+  }
+  const radius =way.map(() => 40);
+  radiuses = radius.join(';');
+  //console.log(radiuses+"radd")
+  //join all elems of array to represent a string
+  wayComma =way.join('');
+  waypoints=wayComma.slice(0, -1);
+  // waypoints=wayComma.slice(0, -1);
+  getRoute(codeLine);
  
 }
 function getStops(callBack){
@@ -119,72 +131,15 @@ function getStops(callBack){
   
 };
 
-function setStopsArray(stopsData){
-  routeStops=[];
-  routeStops=newstops.split(',');
-  waypoints=[];
-  var way = [];
-  for(var i=0; i < routeStops.length;i++){
-    for(var j=0; j < stopsData.length;j++){
-      if(routeStops[i]== stopsData[j][1]){
-        way.push(stopsData[j][3]+ "," +stopsData[j][2] + ";");
-        break;
-      }
 
-    }
 
-  }
-  const radius =way.map(() => 40);
-  radiuses = radius.join(';');
-  //console.log(radiuses+"radd")
-  //join all elems of array to represent a string
-  wayComma =way.join('');
-  waypoints=wayComma.slice(0, -1);
-  // waypoints=wayComma.slice(0, -1);
-  getRoute(codeLine);
-  /*
-  let way = [];
-    for(var i=0; i < routeStops.length;i++){
-    // filter the stops.json to get the json object with the bus-stop with code= routeStops[i]
-    const result = Object.values(stops).filter(item => item.code === routeStops[i].toString());
-  
-    //retrieve lat and lon from object result
-    const lat=Object.entries(result)[0][1].latitude;
-    const lon=Object.entries(result)[0][1].longitude;
-    //add it to array called way with comma and ; 
-    way.push(lon + "," + lat + ";");
-    
-
-  }*/
-   // const radius =way.map(() => 40);
-    //radiuses = radius.join(';');
-    //console.log(radiuses+"radd")
-    //join all elems of array to represent a string
-    //wayComma =way.join('');
-    
-   // waypoints=wayComma.slice(0, -1);
-
-    
-}
-
-function getStopsArray(callBack){
-    // Stream big file in worker thread
-Papa.parse(stopsCsv, {
-  download:true,
-  dynamicTyping: true,
-	complete: function(results) {
-		callBack(results.data)
-	}
-});
-
-}
-
-//                                  DISPLAY ROUTE
+//________________________________________________________________________________________________________________________________DISPLAY ROUTE
 export async function getRoute(code){
-
-    console.log(waypoints);
     
-    //                         CREATE A QUERY TO THE API 
+
+    console.log(waypoints)
+    
+    //________________________________________________________________________________________________________________CREATE A QUERY TO THE API 
      //waypoints.slice(0,-1) REMOVE LAST CHARACTER FROM WAYPOINTS STRING which is ';' in our case
     const query = await fetch(
       'https://api.mapbox.com/matching/v5/mapbox/driving/'+waypoints+ '?geometries=geojson&radiuses='+radiuses+'&steps=true&access_token=pk.eyJ1IjoiZGFuYWl0b3UiLCJhIjoiY2w5ZWp3NG5oMGdhZjNucGJxOXh2MTRuZCJ9.4DkyNzrCoBvSBIEy0r3IPg', { method: 'GET' });
@@ -192,26 +147,19 @@ export async function getRoute(code){
     
     const json = await query.json();
     const data = json.matchings[0];
-    const route = data.geometry;
-    // einai to const me olh th diadromi
-    /*const geojson = { 
-        type: 'Feature',
-        properties: {},
-        geometry: {
-            type: 'LineString',
-            coordinates: route
-         }
-  };*/
+    route = data.geometry;
   sendFlag = choosenBus.getChoosenB;
-  
+  counter=0;
   call(route);
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//                                          CONST MAPP
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+//_________________________________________________________________________________________________________________________________CONST MAPP
 
 
 export const  Mapp = () => {
@@ -238,23 +186,14 @@ export const  Mapp = () => {
         map.resize();
       });
 
-        //___________________________________________________________________________________________________________ZOOM IN ,ZOOM OUT
+      //___________________________________________________________________________________________________________ZOOM IN ,ZOOM OUT
       map.addControl(new mapboxgl.NavigationControl());
 
-        //___________________________________________________________________________________________________________MARKERS FOR BUS STATIONS
+      //___________________________________________________________________________________________________________MARKERS FOR BUS STATIONS
       map.on('load', () => {
-        document.getElementById('slider').addEventListener('input', (event) => {
-          const hour = parseInt(event.target.value);
-          // update the map
-          
-        
-          // converting 0-23 hour to AMPM format
-          const ampm = hour >= 12 ? 'PM' : 'AM';
-          const hour12 = hour % 12 ? hour % 12 : 12;
-        
-          // update text in the UI
-          document.getElementById('active-hour').innerText = hour12 + ampm;
-        });
+
+
+
         stops.forEach(function(marker){
             const el = document.createElement('div');
             el.className= 'marker';
@@ -269,10 +208,8 @@ export const  Mapp = () => {
    
   }, [map]);
 
-//--------------------------------------------------------------------------------------------------------------------------------------------
-//----------------------------- HELPER FOR LAYER OF ROUTE ON MAP -----------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------------------------------------
 
+  // //______________________________________________________________________________________________________HELPER FOR LAYER OF ROUTE ON MAP
   call  = function(route){
     //console.log(Object.entries(route) +"rout")
     // if the route already exists on the map, we'll reset it using setData
@@ -302,33 +239,35 @@ export const  Mapp = () => {
         'line-cap': 'round'
       },
       paint: {
-        'line-color': 'orange',
+        'line-color': '#3887be',
         'line-width': 5,
         'line-opacity': 0.75
       }
     });
-
   }
-  console.log(start)
-  console.log(route.coordinates[0])
+
+  if(start!==route.coordinates[0] || start===undefined){
+
+    if (map.getLayer("point")) {
+      map.removeLayer("point");
+    }
   
-  if(start!=route.coordinates[0] || start==undefined){
-    
-    map.removeLayer('point');
-    map.removeSource('point');
-  
+    if (map.getSource("point")) {
+      map.removeSource("point");
+    }
     
     start= route.coordinates[0];
-    const point = {
-    type: 'FeatureCollection',
-    features: [{
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      'type': 'Point',
-      'coordinates': route.coordinates[0]
+    point = {
+      type: 'FeatureCollection',
+      features: [{
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        'type': 'Point',
+        'coordinates': route.coordinates[0]
       }
-    }]};
+      }]
+    };
   //___________________________________________________________________________________________________________ADD BUS ON THE MAP
   
      map.addSource('point', {
@@ -349,8 +288,39 @@ export const  Mapp = () => {
           'icon-ignore-placement': true
         }
       });
-  }
+       
     
+    }
+    console.log(route+"ekso")
+    animate(point,route);
+  }
+  
+  //___________________________________________________________________________________________________________ANIMATION OF BUS ICON
+  function animate(){ 
+    console.log("ANIMATE");
+    console.log(route+"STO ANIMATE")
+    console.log(Object.entries(route)[0][1])
+    const start = Object.entries(route)[0][1][counter >= steps ? counter - 1 : counter];
+    const end = Object.entries(route)[0][1][counter >= steps ? counter : counter + 1 ];
+
+    if (!start || !end) return;
+         Object.entries(point)[1][1][0].geometry.coordinates = route.coordinates[counter];
+         
+         Object.entries(point)[1][1][0].properties.bearing = turf.bearing(
+            turf.point(start),
+            turf.point(end)
+        );
+         
+        map.getSource('point').setData(point);
+        
+        if (counter < steps) {
+          //setInterval(function(){
+            requestAnimationFrame(animate);
+          //}, 5000);    
+        }
+      
+        counter = counter + 1;  
+      
 
   }  
     return( 
@@ -366,171 +336,3 @@ export const  Mapp = () => {
 
 
 export default Mapp;
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-//----------------------------------------------- KINISI ------------------------------------------------
-const steps = 500;
-let counter = 0;
-const routeline = {
-  type: 'Feature',
-  features: [{
-                'type': 'Feature',
-                'geometry': {
-                'type': 'LineString',
-                'coordinates': [origin,destination]
-                  }
-  }]
-};
-const lineDistance = turf.length(routeline.features[0]);
-const arc = [];
-for (let i = 0; i < lineDistance; i += lineDistance / steps) {
-  const segment = turf.along(routeline.features[0], i);
-  arc.push(segment.geometry.coordinates);
-}
-  
-// Update the route with calculated arc coordinates
-routeline.features[0].geometry.coordinates = arc;
-
-function animate() {
-  const start = routeline.features[0].geometry.coordinates[counter >= steps ? counter - 1 : counter];
-  const end = routeline.features[0].geometry.coordinates[counter >= steps ? counter : counter + 1 ];
-  if (!start || !end) return;
-       
-      // Update point geometry to a new position based on counter denoting
-      // the index to access the arc
-      point.features[0].geometry.coordinates = routeline.features[0].geometry.coordinates[counter];
-       
-      // Calculate the bearing to ensure the icon is rotated to match the route arc
-      // The bearing is calculated between the current point and the next point, except
-      // at the end of the arc, which uses the previous point and the current point
-      point.features[0].properties.bearing = turf.bearing(
-          turf.point(start),
-          turf.point(end)
-      );
-       
-      // Update the source with this new data
-      map.getSource('point').setData(point);
-       
-      // Request the next frame of animation as long as the end has not been reached
-      if (counter < steps) {
-          requestAnimationFrame(animate);
-      }
-       
-      counter = counter + 1;
-  }*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /*POINTS GIA ARXI KAI TELOS
-          //------ MAP ON -----------------------------------------------
-    //                      Add starting point to the map, i mple koukida
-    
-    map.on('load', () => {
-      // make an initial directions request that
-      // starts and ends at the same location
-          getRoute(origin);
-  
-          map.addLayer({
-              id: 'point',
-              type: 'circle',
-              source: {
-                type: 'geojson',
-                data: {
-                  type: 'FeatureCollection',
-                  features: [{
-                      type: 'Feature',
-                      properties: {},
-                      geometry: {
-                          type: 'Point',
-                          coordinates: origin
-                  }
-              }]
-              }
-              },
-              paint: {
-                  'circle-radius': 10,
-                  'circle-color': '#3887be'
-              }
-        });
-        
-      });//telos 1o mapon
-  
-  
-      //         ending point, to kokkino shmeio termatismoy        
-      map.on('load',() => {
-        
-        const end = {
-          type: 'FeatureCollection',
-          features: [{
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: destination
-              }
-            }]
-         };
-          if (map.getLayer('end')) {
-            map.getSource('end').setData(end);
-          } else {
-            map.addLayer({
-              id: 'end',
-              type: 'circle',
-              source: {
-                type: 'geojson',
-                data: {
-                  type: 'FeatureCollection',
-                  features: [{
-                    type: 'Feature',
-                    properties: {},
-                    geometry: {
-                      type: 'Point',
-                      coordinates: destination
-                    }
-                  }]
-               }},
-              paint: {
-              'circle-radius': 10,
-              'circle-color': '#f30'
-            } });
-        }
-      });*/
