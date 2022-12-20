@@ -89,12 +89,11 @@ function setStops(recordRoute){
       break;
     }
    }
-   console.log(newstops+"setstops")
+   //console.log(newstops+"setstops")
    
    /*for(var i=0;i<stopIDs.length-1;i=i+4){
     routeStops.push(stopIDs[i] +stopIDs[i+1] +stopIDs[i+2] );
   }*/
-  console.log("eimai mesa")
   routeStops=[];
   waypoints=[];
   var way = [];
@@ -153,9 +152,21 @@ export async function getRoute(code){
 
 
 
+//Gia na exoume prosbasi sto map 
+export const exportMap ={
+  exmap: null ,
 
+  get getMap(){
+    console.log("Get gia na parw sto map to map apo ControlSlider")
+    return this.exmap;
+  },
 
+  set setMap(newMap) {
+    this.exmap = newMap;
+    console.log("mesas sto settt")
+}
 
+}
 
 
 //_________________________________________________________________________________________________________________________________CONST MAPP
@@ -206,7 +217,7 @@ export const  Mapp = () => {
    
   }, [map]);
 
-
+  exportMap.setMap = map;
   // //______________________________________________________________________________________________________HELPER FOR LAYER OF ROUTE ON MAP
   call  = function(route){
     //console.log(Object.entries(route) +"rout")
