@@ -4,23 +4,27 @@ import {exportMap} from './Map';
 
 var ampm;
 var hour12;
-
+var h;
 function filter(hour){
-    const filter = ['==', ['number', ['get', 'Hour']], 12];
-     // update the map
-     exportMap.getMap.setFilter('collisions', ['==', ['number', ['get', 'Hour']], hour]);
-     ampm = hour >= 12 ? 'PM' : 'AM';
-     hour12 = hour % 12 ? hour % 12 : 12;
-
-    // update text in the UI
-    document.getElementById('active-hour').innerText = hour12 + ampm;
+    
 }
 function ControlSlider() {
-
-    document.getElementById('slider').addEventListener('input', (event) => {
-        const hour = parseInt(event.target.value);
-        filter(hour);
-      });
+    const sl = document.getElementById('slider');
+    if(sl){
+        sl.addEventListener('input', (e) => {
+            const hour = parseInt(e.target.value);
+            //const filter = ['==', ['number', ['get', 'Hour']], 12];
+         // update the map
+         //exportMap.getMap.setFilter('collisions', ['==', ['number', ['get', 'Hour']], hour]);
+            ampm = hour >= 12 ? 'PM' : 'AM';
+            hour12 = hour % 12 ? hour % 12 : 12;
+            h = hour12+ampm;
+            console.log(h);
+            // update text in the UI
+            document.getElementById('active-hour').innerText = hour12 + ampm;
+          });
+    }
+    
     
 
     return (
@@ -35,14 +39,7 @@ function ControlSlider() {
                 <h2>Traffic in route</h2>
                 <div class='row colors'>
                 </div>
-                <div class='row labels'>
-                    <div class='label'>0</div>
-                    <div class='label'>1</div>
-                    <div class='label'>2</div>
-                    <div class='label'>3</div>
-                    <div class='label'>4</div>
-                    <div class='label'>5+</div>
-                </div>
+                
             </div>
 
             <div class='session'>
@@ -68,7 +65,8 @@ export default ControlSlider;
            
 
             
-            
+ /*
+ */           
             
 
             
